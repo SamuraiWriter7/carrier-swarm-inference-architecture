@@ -8,12 +8,107 @@ This repository follows a lightweight candidate-based release process during ear
 
 ### Planned
 
-* Add Trace Receipt Integration.
-* Define wing contribution records.
-* Define carrier activation records.
-* Define early exit records.
-* Add compute cost and optional energy cost logging.
-* Explore integration with Compute Access Royalty OS and Trace Receipt protocols.
+* Add Compute and Royalty Integration.
+* Define compute cost records.
+* Define optional energy cost records.
+* Define reward allocation readiness.
+* Define royalty allocation hooks.
+* Explore integration with Compute Access Royalty OS, Trace Receipt Protocol, and Origin Structure Market.
+
+## [v0.4.0-candidate] - 2026-06-24
+
+### Added
+
+* Added `schemas/trace-receipt-integration.schema.json`.
+* Added `examples/trace-receipt-integration.example.yaml`.
+* Updated `scripts/validate_examples.py` to validate:
+
+  * `Carrier Swarm Mission`
+  * `Wing Role Registry`
+  * `Activation Policy`
+  * `Trace Receipt Integration`
+* Updated `README.md` to reflect v0.4 status, scope, validation output, repository structure, roadmap, and conceptual position.
+* Confirmed GitHub Actions validation passes with v0.4 files.
+
+### Defined
+
+* Introduced `Trace Receipt Integration` as the trace and audit layer for carrier-swarm inference systems.
+* Defined how a carrier-swarm mission can link to trace receipts.
+* Defined contribution records for wing, carrier, trace, and human participants.
+* Defined carrier activation records.
+* Defined early exit records.
+* Defined filtered event records.
+* Defined audit boundaries.
+* Defined future readiness for royalty or compute allocation integration.
+
+### Trace Receipt Integration Fields
+
+The v0.4 schema defines:
+
+* integration identifier
+* version
+* mission reference
+* trace receipts
+* contribution records
+* carrier activation record
+* early exit records
+* filtered event records
+* audit boundary
+
+### Validation
+
+* Confirmed that `carrier-swarm-mission.example.yaml` validates successfully against `carrier-swarm-mission.schema.json`.
+* Confirmed that `wing-role-registry.example.yaml` validates successfully against `wing-role-registry.schema.json`.
+* Confirmed that `activation-policy.example.yaml` validates successfully against `activation-policy.schema.json`.
+* Confirmed that `trace-receipt-integration.example.yaml` validates successfully against `trace-receipt-integration.schema.json`.
+* Confirmed that GitHub Actions validation workflow passes.
+
+### Conceptual Position
+
+`v0.4.0-candidate` establishes the trace and audit layer of Carrier Swarm Inference Architecture.
+
+In v0.1, the repository defined how a mission is recorded.
+
+In v0.2, the repository defined what each wing model is allowed and expected to do.
+
+In v0.3, the repository defined when the carrier model should wake up.
+
+In v0.4, the repository defines how the mission proves what happened.
+
+This prevents carrier-swarm inference from becoming an opaque multi-agent process.
+
+The system should be able to answer:
+
+* who participated;
+* what each wing did;
+* what was filtered;
+* why early exit was rejected or accepted;
+* why the carrier was activated;
+* whether human review was required;
+* whether the record is ready for future royalty or compute allocation integration.
+
+The core principle remains:
+
+> Do not invoke the largest model by default.
+> Let smaller models scout, filter, compress, verify, route, and record first.
+
+### Repository Status
+
+`v0.4.0-candidate` represents the fourth functional validation point of the repository.
+
+The repository now includes:
+
+* mission schema
+* mission example
+* wing role registry schema
+* wing role registry example
+* activation policy schema
+* activation policy example
+* trace receipt integration schema
+* trace receipt integration example
+* validation script
+* GitHub Actions workflow
+* validated v0.1, v0.2, v0.3, and v0.4 examples
 
 ## [v0.3.0-candidate] - 2026-06-24
 
@@ -236,4 +331,3 @@ In this model:
 `v0.1.0-candidate` represents the first functional validation point of the repository.
 
 The initial carrier-swarm mission schema, example, validation script, and GitHub Actions workflow are now in place.
-
