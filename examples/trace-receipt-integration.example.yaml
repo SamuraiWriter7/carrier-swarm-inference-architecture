@@ -1,0 +1,148 @@
+integration_id: trace-receipt-integration-v0.4
+version: v0.4.0-candidate
+description: >
+  A trace receipt integration record for a carrier-swarm inference mission.
+  This record links wing reports, carrier activation, contribution records,
+  filtered events, and audit boundaries into a single traceable mission layer.
+
+mission_reference:
+  mission_id: mission-2026-001
+  mission_schema: carrier-swarm-mission.schema.json
+  mission_status: carrier_activated
+  activation_policy_id: activation-policy-v0.3
+
+trace_receipts:
+  - receipt_id: receipt-scout-001
+    receipt_type: wing_report
+    generated_by:
+      node_id: scout-model-01
+      node_type: wing_node
+      role: scout
+    related_stage: local_inference
+    summary: >
+      Scout wing observed the input and reported that the event was low-risk
+      but below the configured confidence threshold for early exit.
+    external_reference_id: trace-carrier-swarm-2026-001
+    required_for_audit: true
+
+  - receipt_id: receipt-router-001
+    receipt_type: wing_report
+    generated_by:
+      node_id: router-model-01
+      node_type: wing_node
+      role: router
+    related_stage: return_report
+    summary: >
+      Router wing directed the mission to the compression wing before carrier
+      integration.
+    external_reference_id: trace-carrier-swarm-2026-002
+    required_for_audit: true
+
+  - receipt_id: receipt-carrier-activation-001
+    receipt_type: carrier_activation
+    generated_by:
+      node_id: local-carrier-model-01
+      node_type: carrier_node
+      role: integration_and_final_reasoning
+    related_stage: activation_decision
+    summary: >
+      Carrier activation was recorded because scout confidence was below the
+      policy threshold and human review was required.
+    external_reference_id: trace-carrier-swarm-2026-003
+    required_for_audit: true
+
+  - receipt_id: receipt-human-review-001
+    receipt_type: human_review
+    generated_by:
+      node_id: human-operator-01
+      node_type: human_operator
+      role: reviewer
+    related_stage: human_review
+    summary: >
+      Human review was marked as pending due to policy requirements for
+      escalation and final approval.
+    external_reference_id: trace-carrier-swarm-2026-004
+    required_for_audit: true
+
+contribution_records:
+  - contributor_id: scout-model-01
+    contributor_type: wing_node
+    role: scout
+    contribution_type: scouting
+    contribution_summary: >
+      Performed initial observation and confidence assessment.
+    contribution_weight: 0.25
+    eligible_for_reward_allocation: true
+
+  - contributor_id: router-model-01
+    contributor_type: wing_node
+    role: router
+    contribution_type: routing
+    contribution_summary: >
+      Determined the next route for the inference mission.
+    contribution_weight: 0.2
+    eligible_for_reward_allocation: true
+
+  - contributor_id: compression-model-01
+    contributor_type: wing_node
+    role: compressor
+    contribution_type: compression
+    contribution_summary: >
+      Produced a compact return report for carrier integration.
+    contribution_weight: 0.2
+    eligible_for_reward_allocation: true
+
+  - contributor_id: local-carrier-model-01
+    contributor_type: carrier_node
+    role: integration_and_final_reasoning
+    contribution_type: carrier_integration
+    contribution_summary: >
+      Integrated wing reports and prepared the mission for human review.
+    contribution_weight: 0.25
+    eligible_for_reward_allocation: true
+
+  - contributor_id: human-operator-01
+    contributor_type: human_operator
+    role: reviewer
+    contribution_type: human_review
+    contribution_summary: >
+      Provided the human governance boundary for the escalated mission.
+    contribution_weight: 0.1
+    eligible_for_reward_allocation: false
+
+carrier_activation_record:
+  carrier_activated: true
+  decision_reason: >
+    Carrier activation was required because scout confidence was below the
+    early-exit threshold and human review was required by policy.
+  triggered_by:
+    - scout-model-01
+    - low_confidence
+    - human_review_required
+  activation_policy_id: activation-policy-v0.3
+  trace_recorded: true
+
+early_exit_records:
+  - early_exit_allowed: false
+    reason: >
+      Early exit was rejected because wing confidence did not meet the required
+      threshold and human review was required.
+    decided_by: activation-policy-v0.3
+    trace_recorded: true
+
+filtered_event_records:
+  - event_id: local-event-001
+    filtered_by: scout-model-01
+    filter_reason: >
+      Raw input was reduced to an event summary before routing.
+    retained_summary: >
+      Low-risk local event with confidence below early-exit threshold.
+
+audit_boundary:
+  trace_complete: true
+  human_review_required: true
+  external_trace_link_allowed: true
+  royalty_integration_ready: true
+  audit_note: >
+    This v0.4 record is ready for future integration with Trace Receipt Protocol,
+    AI Search Trace Receipt Standard, and Compute Access Royalty OS.
