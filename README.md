@@ -4,11 +4,11 @@ A lightweight protocol for coordinating central carrier models and specialized w
 
 ## Status
 
-**Current version:** `v0.4.0-candidate`
-**Current focus:** Trace Receipt Integration
+**Current version:** `v0.5.0-candidate`
+**Current focus:** Compute and Royalty Integration
 **Validation status:** GitHub Actions passed
 
-This repository has reached its fourth functional validation point.
+This repository has reached its fifth functional validation point.
 
 The repository now includes:
 
@@ -16,12 +16,13 @@ The repository now includes:
 * `Wing Role Registry`
 * `Activation Policy`
 * `Trace Receipt Integration`
+* `Compute and Royalty Integration`
 * JSON Schemas
 * YAML examples
 * validation script
 * GitHub Actions workflow
 
-All v0.1, v0.2, v0.3, and v0.4 examples validate successfully against their schemas.
+All v0.1, v0.2, v0.3, v0.4, and v0.5 examples validate successfully against their schemas.
 
 ## Overview
 
@@ -50,12 +51,13 @@ This causes unnecessary:
 * cost
 * central dependency
 * opaque multi-agent behavior
+* unclear contribution tracking
 
 Carrier Swarm Inference Architecture reduces this waste by introducing an inference relay structure.
 
 Instead of sending every input directly to a large model, the system first delegates the task to lightweight specialized models. Only uncertain, complex, high-risk, or high-value cases are escalated to the carrier model.
 
-With v0.4, the system also records who participated, what was filtered, why escalation happened, and how the final trace can support audit, attribution, or future reward allocation.
+With v0.5, the system can also record compute usage, optional energy cost, contribution weight, reward eligibility, royalty hooks, and allocation boundaries.
 
 ## Conceptual Model
 
@@ -74,9 +76,11 @@ Early Exit / Continue with Wings / Activate Carrier / Human Review / Halt
   ↓
 Trace Receipt Integration
   ↓
+Compute and Royalty Integration
+  ↓
 Carrier Model: Integration / Final Reasoning
   ↓
-Human Review / Trace Record / Contribution Record
+Human Review / Trace Record / Contribution Record / Allocation Boundary
 ```
 
 ## Core Components
@@ -195,6 +199,29 @@ It records:
 
 The purpose is to prevent carrier-swarm inference from becoming a black-box multi-agent process.
 
+### Compute and Royalty Integration
+
+The **Compute and Royalty Integration** defines how carrier-swarm trace records connect to compute cost, optional energy cost, contribution weights, reward eligibility, royalty hooks, and allocation boundaries.
+
+It records:
+
+* mission reference
+* trace reference
+* compute usage
+* optional energy cost
+* optional monetary cost estimate
+* contribution allocation
+* reward eligibility
+* royalty hooks
+* compute access hooks
+* origin attribution hooks
+* audit export hooks
+* allocation boundaries
+
+The purpose is to connect inference relay with resource accounting and future value distribution.
+
+This turns carrier-swarm inference into a compute-aware and contribution-aware architecture.
+
 ## v0.1 Scope — Carrier Swarm Mission
 
 The first version defines a minimal record format for a **Carrier Swarm Mission**.
@@ -258,6 +285,25 @@ Trace Receipt Integration records:
 * future royalty or compute allocation readiness
 
 This turns carrier-swarm inference into a traceable, auditable, contribution-aware relay system.
+
+## v0.5 Scope — Compute and Royalty Integration
+
+The fifth version defines the compute and value-allocation integration layer.
+
+Compute and Royalty Integration records:
+
+* compute cost records
+* optional energy cost records
+* optional monetary cost estimates
+* contribution allocation records
+* reward eligibility
+* royalty hooks
+* compute access allocation hooks
+* origin attribution hooks
+* audit export hooks
+* allocation boundaries
+
+This turns carrier-swarm inference into a compute-aware, energy-aware, contribution-aware, and royalty-ready relay system.
 
 ## Design Principles
 
@@ -355,7 +401,39 @@ The trace layer should make it possible to identify:
 
 This enables future integration with compute allocation, royalty allocation, or origin attribution systems.
 
-### 8. Human Governance Remains Central
+### 8. Compute Cost Should Be Visible
+
+Carrier-swarm inference should record how much compute was used where possible.
+
+Compute records may include:
+
+* token usage
+* inference calls
+* model steps
+* CPU milliseconds
+* GPU milliseconds
+* NPU milliseconds
+* edge events
+* manual review units
+
+Optional fields may include:
+
+* energy cost in millijoules
+* monetary cost estimate
+* cost estimation method
+
+### 9. Reward Allocation Must Respect Governance
+
+Reward or royalty allocation should not happen blindly.
+
+Allocation boundaries should define:
+
+* whether allocation is ready;
+* whether human review is required;
+* whether automatic distribution is allowed;
+* whether audit is required.
+
+### 10. Human Governance Remains Central
 
 The carrier model is not the final authority in high-impact contexts.
 
@@ -365,6 +443,7 @@ Human review should remain available, especially when:
 * outputs are uncertain
 * safety risks exist
 * attribution or reward allocation is involved
+* automatic distribution is requested
 
 ## Validation
 
@@ -399,6 +478,10 @@ Expected output:
   schema : schemas/trace-receipt-integration.schema.json
   example: examples/trace-receipt-integration.example.yaml
 [ok] trace-receipt-integration.example.yaml is valid
+[validate] Compute and Royalty Integration
+  schema : schemas/compute-royalty-integration.schema.json
+  example: examples/compute-royalty-integration.example.yaml
+[ok] compute-royalty-integration.example.yaml is valid
 [ok] all examples are valid
 ```
 
@@ -420,12 +503,14 @@ This workflow validates the example files automatically on push, pull request, o
 │   ├── carrier-swarm-mission.schema.json
 │   ├── wing-role-registry.schema.json
 │   ├── activation-policy.schema.json
-│   └── trace-receipt-integration.schema.json
+│   ├── trace-receipt-integration.schema.json
+│   └── compute-royalty-integration.schema.json
 ├── examples/
 │   ├── carrier-swarm-mission.example.yaml
 │   ├── wing-role-registry.example.yaml
 │   ├── activation-policy.example.yaml
-│   └── trace-receipt-integration.example.yaml
+│   ├── trace-receipt-integration.example.yaml
+│   └── compute-royalty-integration.example.yaml
 ├── scripts/
 │   └── validate_examples.py
 └── .github/
@@ -446,7 +531,7 @@ Carrier Swarm Inference Architecture can connect with:
 
 This repository focuses on the inference relay layer:
 
-> How should inference be distributed, routed, escalated, role-assigned, policy-controlled, traced, and audited?
+> How should inference be distributed, routed, escalated, role-assigned, policy-controlled, traced, audited, costed, and connected to reward allocation?
 
 ## Intended Use Cases
 
@@ -464,6 +549,9 @@ This repository focuses on the inference relay layer:
 * activation-controlled AI inference
 * auditable inference relay
 * contribution-aware AI workflows
+* royalty-ready inference systems
+* compute allocation records
+* origin attribution workflows
 
 ## Roadmap
 
@@ -543,13 +631,25 @@ Initial records:
 
 ### v0.5 — Compute and Royalty Integration
 
-Add compute cost, optional energy cost, contribution weight, and reward allocation fields.
+Connect carrier-swarm traces with compute cost, optional energy cost, contribution weight, reward allocation readiness, and royalty hooks.
 
-Potential integrations include:
+Status:
 
-* Compute Access Royalty OS
-* Trace Receipt Protocol
-* Origin Structure Market
+* Compute and Royalty Integration schema created
+* Compute and Royalty Integration example created
+* validation script updated
+* GitHub Actions validation passed
+
+Initial records:
+
+* mission reference
+* trace reference
+* compute record
+* optional energy cost
+* optional monetary cost estimate
+* contribution allocation
+* royalty hook
+* allocation boundary
 
 ## Conceptual Position
 
@@ -566,13 +666,16 @@ The Activation Policy decides whether the mission can end early, continue with w
 
 The Trace Receipt Integration records who participated, what was filtered, why escalation happened, and whether the mission is ready for audit or future contribution allocation.
 
+The Compute and Royalty Integration records compute usage, optional energy cost, contribution weights, reward eligibility, and downstream allocation hooks.
+
 The carrier integrates only when needed.
 
 The Wing Role Registry ensures that the swarm does not become chaotic.
 The Activation Policy ensures that the carrier does not become monolithic again.
 The Trace Receipt Integration ensures that the relay does not become opaque.
+The Compute and Royalty Integration ensures that contribution and resource usage can be accounted for.
 
-This turns AI inference from a monolithic pipeline into a traceable, role-based, policy-controlled, contribution-aware relay system.
+This turns AI inference from a monolithic pipeline into a traceable, role-based, policy-controlled, contribution-aware, and royalty-ready relay system.
 
 In short:
 
@@ -581,5 +684,4 @@ In short:
 ## License
 
 TBD.
-
 
