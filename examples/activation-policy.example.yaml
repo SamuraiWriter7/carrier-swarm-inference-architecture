@@ -1,0 +1,105 @@
+policy_id: activation-policy-v0.3
+version: v0.3.0-candidate
+description: >
+  A carrier activation policy for Carrier Swarm Inference Architecture.
+  This policy defines when lightweight wing models may complete a mission locally,
+  when the carrier model must be activated, and when human review is required.
+
+default_carrier_activation: on_demand
+
+early_exit:
+  enabled: true
+  allowed_when:
+    - high_confidence_local_result
+    - low_risk
+    - routine_input
+    - sufficient_wing_consensus
+    - human_review_not_required
+    - no_safety_concern
+    - trace_complete
+  requires_trace_record: true
+  minimum_confidence: 0.9
+  maximum_risk_level: low
+
+carrier_activation_triggers:
+  - trigger_id: low-confidence-trigger
+    condition: low_confidence
+    severity: medium
+    activation_required: true
+    human_review_required: false
+    description: >
+      Activate the carrier when wing confidence falls below the configured
+      early-exit threshold.
+
+  - trigger_id: conflicting-wing-reports-trigger
+    condition: conflicting_wing_reports
+    severity: high
+    activation_required: true
+    human_review_required: true
+    description: >
+      Activate the carrier and request human review when wing reports conflict
+      in a way that affects the mission outcome.
+
+  - trigger_id: safety-concern-trigger
+    condition: safety_concern
+    severity: critical
+    activation_required: true
+    human_review_required: true
+    description: >
+      Activate the carrier and require human review when a safety concern is
+      detected by a safety guard wing.
+
+  - trigger_id: high-value-decision-trigger
+    condition: high_value_decision
+    severity: high
+    activation_required: true
+    human_review_required: true
+    description: >
+      Activate the carrier when the mission may affect attribution, reward
+      allocation, governance, or other high-value decisions.
+
+thresholds:
+  minimum_wing_confidence_for_early_exit: 0.9
+  maximum_ambiguity_for_early_exit: 0.2
+  minimum_consensus_ratio: 0.75
+  risk_score_for_carrier_activation: 0.6
+  risk_score_for_human_review: 0.8
+
+escalation_decision:
+  decision_required: true
+  allowed_decisions:
+    - early_exit
+    - continue_with_wings
+    - activate_carrier
+    - request_human_review
+    - halt_mission
+  justification_required: true
+  required_fields:
+    - decision
+    - reason
+    - triggered_by
+    - confidence
+    - risk_level
+    - human_review_status
+    - trace_record_id
+
+trace_requirements:
+  log_activation_decision: true
+  log_early_exit_decision: true
+  log_trigger_conditions: true
+  log_thresholds: true
+  log_human_review_status: true
+
+human_governance:
+  human_review_available: true
+  human_review_required_when:
+    - high_risk
+    - critical_risk
+    - safety_concern
+    - high_value_decision
+    - conflicting_wing_reports
+    - human_impacting_decision
+    - attribution_or_reward_allocation
+  note: >
+    Carrier activation does not remove human governance. Human review remains
+    required for safety-sensitive, high-impact, or attribution-related missions.
