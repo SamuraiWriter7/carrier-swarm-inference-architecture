@@ -8,12 +8,170 @@ This repository follows a lightweight candidate-based release process during ear
 
 ### Planned
 
-* Add Compute and Royalty Integration.
-* Define compute cost records.
-* Define optional energy cost records.
-* Define reward allocation readiness.
-* Define royalty allocation hooks.
-* Explore integration with Compute Access Royalty OS, Trace Receipt Protocol, and Origin Structure Market.
+* Refine compute and royalty allocation semantics.
+* Add stronger cross-schema references.
+* Add optional examples for early-exit missions.
+* Add optional examples for carrier-not-activated missions.
+* Explore integration with Compute Access Royalty OS, Trace Receipt Protocol, AI Search Trace Receipt Standard, and Origin Structure Market.
+* Consider whether v0.6 should continue in this repository or begin a second-stage repository.
+
+## [v0.5.0-candidate] - 2026-06-24
+
+### Added
+
+* Added `schemas/compute-royalty-integration.schema.json`.
+* Added `examples/compute-royalty-integration.example.yaml`.
+* Updated `scripts/validate_examples.py` to validate:
+
+  * `Carrier Swarm Mission`
+  * `Wing Role Registry`
+  * `Activation Policy`
+  * `Trace Receipt Integration`
+  * `Compute and Royalty Integration`
+* Updated `README.md` to reflect v0.5 status, scope, validation output, repository structure, roadmap, and conceptual position.
+* Confirmed GitHub Actions validation passes with v0.5 files.
+
+### Defined
+
+* Introduced `Compute and Royalty Integration` as the compute, cost, contribution, and reward-allocation layer for carrier-swarm inference systems.
+* Defined how carrier-swarm missions can connect to compute usage records.
+* Defined optional energy cost records.
+* Defined optional monetary cost estimates.
+* Defined contribution allocation records.
+* Defined reward eligibility.
+* Defined royalty hooks.
+* Defined compute access hooks.
+* Defined origin attribution hooks.
+* Defined audit export hooks.
+* Defined allocation boundaries.
+
+### Compute and Royalty Integration Fields
+
+The v0.5 schema defines:
+
+* integration identifier
+* version
+* mission reference
+* trace reference
+* compute records
+* contribution allocation
+* royalty hooks
+* allocation boundary
+
+### Initial Compute Records
+
+The v0.5 example includes compute records for:
+
+* Scout Wing
+* Router Wing
+* Compression Wing
+* Carrier Node
+* Human Operator
+
+Each compute record may include:
+
+* node identifier
+* node type
+* role
+* compute unit
+* compute cost
+* optional energy cost in millijoules
+* optional monetary cost estimate
+* cost recording status
+* cost estimation method
+
+### Initial Allocation Records
+
+The v0.5 example includes contribution allocation records for:
+
+* scouting
+* routing
+* compression
+* carrier integration
+* human review
+
+Each allocation record may include:
+
+* participant identifier
+* participant type
+* role
+* contribution weight
+* reward eligibility
+* allocation note
+
+### Initial Royalty Hooks
+
+The v0.5 example includes hooks for:
+
+* royalty allocation
+* origin attribution
+* audit export
+
+Target protocols include:
+
+* Compute Access Royalty OS
+* Origin Structure Market
+* Trace Receipt Protocol
+
+### Validation
+
+* Confirmed that `carrier-swarm-mission.example.yaml` validates successfully against `carrier-swarm-mission.schema.json`.
+* Confirmed that `wing-role-registry.example.yaml` validates successfully against `wing-role-registry.schema.json`.
+* Confirmed that `activation-policy.example.yaml` validates successfully against `activation-policy.schema.json`.
+* Confirmed that `trace-receipt-integration.example.yaml` validates successfully against `trace-receipt-integration.schema.json`.
+* Confirmed that `compute-royalty-integration.example.yaml` validates successfully against `compute-royalty-integration.schema.json`.
+* Confirmed that GitHub Actions validation workflow passes.
+
+### Conceptual Position
+
+`v0.5.0-candidate` establishes the compute and royalty integration layer of Carrier Swarm Inference Architecture.
+
+In v0.1, the repository defined how a mission is recorded.
+
+In v0.2, the repository defined what each wing model is allowed and expected to do.
+
+In v0.3, the repository defined when the carrier model should wake up.
+
+In v0.4, the repository defined how the mission proves what happened.
+
+In v0.5, the repository defines how compute usage, optional energy cost, contribution weight, and reward allocation readiness can be connected.
+
+This turns carrier-swarm inference into a compute-aware, trace-aware, contribution-aware, and royalty-ready relay system.
+
+The core principle remains:
+
+> Do not invoke the largest model by default.
+> Let smaller models scout, filter, compress, verify, route, record, and account first.
+
+### Repository Status
+
+`v0.5.0-candidate` represents the fifth functional validation point of the repository.
+
+The repository now includes:
+
+* mission schema
+* mission example
+* wing role registry schema
+* wing role registry example
+* activation policy schema
+* activation policy example
+* trace receipt integration schema
+* trace receipt integration example
+* compute and royalty integration schema
+* compute and royalty integration example
+* validation script
+* GitHub Actions workflow
+* validated v0.1, v0.2, v0.3, v0.4, and v0.5 examples
+
+### First Arc Summary
+
+The first arc now defines a complete carrier-swarm inference lifecycle:
+
+1. Record the mission.
+2. Define the wings.
+3. Decide when the carrier wakes up.
+4. Prove what happened.
+5. Connect compute, contribution, and reward allocation.
 
 ## [v0.4.0-candidate] - 2026-06-24
 
@@ -41,20 +199,6 @@ This repository follows a lightweight candidate-based release process during ear
 * Defined audit boundaries.
 * Defined future readiness for royalty or compute allocation integration.
 
-### Trace Receipt Integration Fields
-
-The v0.4 schema defines:
-
-* integration identifier
-* version
-* mission reference
-* trace receipts
-* contribution records
-* carrier activation record
-* early exit records
-* filtered event records
-* audit boundary
-
 ### Validation
 
 * Confirmed that `carrier-swarm-mission.example.yaml` validates successfully against `carrier-swarm-mission.schema.json`.
@@ -65,50 +209,9 @@ The v0.4 schema defines:
 
 ### Conceptual Position
 
-`v0.4.0-candidate` establishes the trace and audit layer of Carrier Swarm Inference Architecture.
+`v0.4.0-candidate` established the trace and audit layer of Carrier Swarm Inference Architecture.
 
-In v0.1, the repository defined how a mission is recorded.
-
-In v0.2, the repository defined what each wing model is allowed and expected to do.
-
-In v0.3, the repository defined when the carrier model should wake up.
-
-In v0.4, the repository defines how the mission proves what happened.
-
-This prevents carrier-swarm inference from becoming an opaque multi-agent process.
-
-The system should be able to answer:
-
-* who participated;
-* what each wing did;
-* what was filtered;
-* why early exit was rejected or accepted;
-* why the carrier was activated;
-* whether human review was required;
-* whether the record is ready for future royalty or compute allocation integration.
-
-The core principle remains:
-
-> Do not invoke the largest model by default.
-> Let smaller models scout, filter, compress, verify, route, and record first.
-
-### Repository Status
-
-`v0.4.0-candidate` represents the fourth functional validation point of the repository.
-
-The repository now includes:
-
-* mission schema
-* mission example
-* wing role registry schema
-* wing role registry example
-* activation policy schema
-* activation policy example
-* trace receipt integration schema
-* trace receipt integration example
-* validation script
-* GitHub Actions workflow
-* validated v0.1, v0.2, v0.3, and v0.4 examples
+It defines how the mission proves what happened.
 
 ## [v0.3.0-candidate] - 2026-06-24
 
@@ -121,7 +224,7 @@ The repository now includes:
   * `Carrier Swarm Mission`
   * `Wing Role Registry`
   * `Activation Policy`
-* Updated `README.md` to reflect v0.3 status, scope, examples, validation output, repository structure, roadmap, and conceptual position.
+* Updated `README.md` to reflect v0.3 status, scope, validation output, repository structure, roadmap, and conceptual position.
 * Confirmed GitHub Actions validation passes with v0.3 files.
 
 ### Defined
@@ -140,20 +243,6 @@ The repository now includes:
   * request human review
   * halt mission
 
-### Activation Policy Fields
-
-The v0.3 schema defines:
-
-* policy identifier
-* version
-* default carrier activation mode
-* early exit rules
-* carrier activation triggers
-* optional numeric thresholds
-* escalation decision records
-* trace requirements
-* human governance boundaries
-
 ### Validation
 
 * Confirmed that `carrier-swarm-mission.example.yaml` validates successfully against `carrier-swarm-mission.schema.json`.
@@ -163,36 +252,9 @@ The v0.3 schema defines:
 
 ### Conceptual Position
 
-`v0.3.0-candidate` establishes the energy-aware decision layer of Carrier Swarm Inference Architecture.
+`v0.3.0-candidate` established the energy-aware decision layer of Carrier Swarm Inference Architecture.
 
-In v0.1, the repository defined how a mission is recorded.
-
-In v0.2, the repository defined what each wing model is allowed and expected to do.
-
-In v0.3, the repository defines when the carrier model should wake up.
-
-This prevents the carrier from becoming an always-on monolithic system again.
-
-The core principle remains:
-
-> Do not invoke the largest model by default.
-> Let smaller models scout, filter, compress, verify, route, and record first.
-
-### Repository Status
-
-`v0.3.0-candidate` represents the third functional validation point of the repository.
-
-The repository now includes:
-
-* mission schema
-* mission example
-* wing role registry schema
-* wing role registry example
-* activation policy schema
-* activation policy example
-* validation script
-* GitHub Actions workflow
-* validated v0.1, v0.2, and v0.3 examples
+It defines when the carrier model should wake up.
 
 ## [v0.2.0-candidate] - 2026-06-24
 
@@ -204,7 +266,7 @@ The repository now includes:
 
   * `Carrier Swarm Mission`
   * `Wing Role Registry`
-* Updated `README.md` to reflect v0.2 status, scope, examples, validation output, repository structure, and roadmap.
+* Updated `README.md` to reflect v0.2 status, scope, validation output, repository structure, and roadmap.
 * Confirmed GitHub Actions validation passes with v0.2 files.
 
 ### Defined
@@ -236,33 +298,9 @@ The repository now includes:
 
 ### Conceptual Position
 
-`v0.2.0-candidate` turns the carrier-swarm model from a general inference relay concept into a role-based architecture.
+`v0.2.0-candidate` turned the carrier-swarm model from a general inference relay concept into a role-based architecture.
 
-In v0.1, the repository defined how a mission is recorded.
-
-In v0.2, the repository defines what each wing model is allowed and expected to do.
-
-This prevents the swarm from becoming a vague collection of helper agents.
-Each wing now has a defined role, activation condition, permission boundary, and trace obligation.
-
-The core principle remains:
-
-> Do not invoke the largest model by default.
-> Let smaller models scout, filter, compress, verify, route, and record first.
-
-### Repository Status
-
-`v0.2.0-candidate` represents the second functional validation point of the repository.
-
-The repository now includes:
-
-* mission schema
-* mission example
-* wing role registry schema
-* wing role registry example
-* validation script
-* GitHub Actions workflow
-* validated v0.1 and v0.2 examples
+It defines what each wing model is allowed and expected to do.
 
 ## [v0.1.0-candidate] - 2026-06-24
 
@@ -312,22 +350,6 @@ The repository now includes:
 
 ### Conceptual Position
 
-This candidate release established the first minimal specification for replacing always-on monolithic AI inference with a carrier-swarm relay structure.
+`v0.1.0-candidate` established the first minimal specification for replacing always-on monolithic AI inference with a carrier-swarm relay structure.
 
-The core principle is:
-
-> Do not invoke the largest model by default.
-> Let smaller models scout, filter, compress, and route first.
-
-In this model:
-
-* the carrier is not a monolithic god model;
-* wing models are not reduced copies of the carrier;
-* inference is routed, filtered, escalated, and recorded;
-* human review remains part of the governance boundary.
-
-### Repository Status
-
-`v0.1.0-candidate` represents the first functional validation point of the repository.
-
-The initial carrier-swarm mission schema, example, validation script, and GitHub Actions workflow are now in place.
+It defines how a carrier-swarm mission is recorded.
