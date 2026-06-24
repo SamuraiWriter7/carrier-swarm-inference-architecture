@@ -1,0 +1,82 @@
+mission_id: mission-2026-001
+mission_type: inference_relay
+description: >
+  A minimal carrier-swarm inference relay mission where lightweight wing models
+  perform initial classification, routing, and compression before escalating
+  only necessary information to the carrier model.
+
+carrier_node:
+  id: local-carrier-model-01
+  role: integration_and_final_reasoning
+  model_class: local_carrier
+  activation_mode: on_demand
+
+wing_nodes:
+  - id: scout-model-01
+    role: scout
+    model_class: lightweight_model
+    local_inference:
+      result: "Input appears to be a low-risk local event."
+      confidence: 0.82
+      early_exit_recommended: false
+      escalation_recommended: true
+
+  - id: router-model-01
+    role: router
+    model_class: specialized_agent
+    local_inference:
+      result: "Route to compression model before carrier integration."
+      confidence: 0.88
+      early_exit_recommended: false
+      escalation_recommended: true
+
+  - id: compression-model-01
+    role: compressor
+    model_class: small_model
+    local_inference:
+      result: "Compressed event report generated for carrier review."
+      confidence: 0.91
+      early_exit_recommended: false
+      escalation_recommended: true
+
+relay_cycle:
+  - dispatch
+  - local_inference
+  - event_filtering
+  - return_report
+  - carrier_integration
+  - human_review
+  - trace_record
+
+activation_policy:
+  central_activation: on_demand
+  early_exit_enabled: true
+  escalation_required_when:
+    - low_confidence
+    - high_ambiguity
+    - human_review_required
+  confidence_threshold: 0.85
+  risk_threshold: medium
+
+escalation:
+  carrier_activated: true
+  reason: >
+    Carrier activation was required because the scout confidence was below
+    the mission threshold and human review was required.
+  triggered_by:
+    - scout-model-01
+    - low_confidence
+    - human_review_required
+
+trace:
+  receipt_required: true
+  contribution_logging: true
+  energy_logging: optional
+  human_review_required: true
+  trace_record_id: trace-carrier-swarm-2026-001
+
+human_review:
+  required: true
+  status: pending
+  reviewer_role: human_operator
+
