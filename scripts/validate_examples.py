@@ -32,6 +32,11 @@ VALIDATION_TARGETS = [
         "schema": ROOT_DIR / "schemas" / "wing-role-registry.schema.json",
         "example": ROOT_DIR / "examples" / "wing-role-registry.example.yaml",
     },
+    {
+        "name": "Activation Policy",
+        "schema": ROOT_DIR / "schemas" / "activation-policy.schema.json",
+        "example": ROOT_DIR / "examples" / "activation-policy.example.yaml",
+    },
 ]
 
 
