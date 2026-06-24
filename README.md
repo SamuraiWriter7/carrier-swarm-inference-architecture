@@ -2,6 +2,17 @@
 
 A lightweight protocol for coordinating central carrier models and specialized wing models to reduce unnecessary large-model activation through traceable inference relay.
 
+## Status
+
+**Current version:** `v0.1.0-candidate`
+**Current focus:** Carrier Swarm Mission
+**Validation status:** GitHub Actions passed
+
+This repository has reached its first functional validation point.
+
+The initial schema, example, validation script, and GitHub Actions workflow are in place.
+The `Carrier Swarm Mission` example validates successfully against the JSON Schema.
+
 ## Overview
 
 **Carrier Swarm Inference Architecture** defines a modular AI inference structure in which a central carrier model coordinates multiple lightweight wing models.
@@ -124,24 +135,44 @@ A Carrier Swarm Mission records:
 ```yaml
 mission_id: mission-2026-001
 mission_type: inference_relay
+description: >
+  A minimal carrier-swarm inference relay mission where lightweight wing models
+  perform initial classification, routing, and compression before escalating
+  only necessary information to the carrier model.
 
 carrier_node:
   id: local-carrier-model-01
   role: integration_and_final_reasoning
+  model_class: local_carrier
   activation_mode: on_demand
 
 wing_nodes:
   - id: scout-model-01
-    role: initial_classification
+    role: scout
     model_class: lightweight_model
+    local_inference:
+      result: "Input appears to be a low-risk local event."
+      confidence: 0.82
+      early_exit_recommended: false
+      escalation_recommended: true
 
   - id: router-model-01
-    role: routing_decision
-    model_class: lightweight_model
+    role: router
+    model_class: specialized_agent
+    local_inference:
+      result: "Route to compression model before carrier integration."
+      confidence: 0.88
+      early_exit_recommended: false
+      escalation_recommended: true
 
   - id: compression-model-01
-    role: summary_and_feature_compression
-    model_class: lightweight_model
+    role: compressor
+    model_class: small_model
+    local_inference:
+      result: "Compressed event report generated for carrier review."
+      confidence: 0.91
+      early_exit_recommended: false
+      escalation_recommended: true
 
 relay_cycle:
   - dispatch
@@ -157,8 +188,19 @@ activation_policy:
   early_exit_enabled: true
   escalation_required_when:
     - low_confidence
-    - high_risk
     - high_ambiguity
+    - human_review_required
+  confidence_threshold: 0.85
+  risk_threshold: medium
+
+escalation:
+  carrier_activated: true
+  reason: >
+    Carrier activation was required because the scout confidence was below
+    the mission threshold and human review was required.
+  triggered_by:
+    - scout-model-01
+    - low_confidence
     - human_review_required
 
 trace:
@@ -166,6 +208,12 @@ trace:
   contribution_logging: true
   energy_logging: optional
   human_review_required: true
+  trace_record_id: trace-carrier-swarm-2026-001
+
+human_review:
+  required: true
+  status: pending
+  reviewer_role: human_operator
 ```
 
 ## Design Principles
@@ -228,6 +276,55 @@ Human review should remain available, especially when:
 * safety risks exist
 * attribution or reward allocation is involved
 
+## Validation
+
+Install dependencies:
+
+```bash
+pip install jsonschema pyyaml
+```
+
+Run validation:
+
+```bash
+python scripts/validate_examples.py
+```
+
+Expected output:
+
+```text
+[validate] Carrier Swarm Mission
+  schema : schemas/carrier-swarm-mission.schema.json
+  example: examples/carrier-swarm-mission.example.yaml
+[ok] carrier-swarm-mission.example.yaml is valid
+[ok] all examples are valid
+```
+
+The repository also includes a GitHub Actions workflow:
+
+```text
+.github/workflows/validate.yml
+```
+
+This workflow validates the example file automatically on push, pull request, or manual dispatch.
+
+## Repository Structure
+
+```text
+.
+├── README.md
+├── CHANGELOG.md
+├── schemas/
+│   └── carrier-swarm-mission.schema.json
+├── examples/
+│   └── carrier-swarm-mission.example.yaml
+├── scripts/
+│   └── validate_examples.py
+└── .github/
+    └── workflows/
+        └── validate.yml
+```
+
 ## Relationship to Other Protocols
 
 Carrier Swarm Inference Architecture can connect with:
@@ -256,53 +353,88 @@ This repository focuses on the inference relay layer:
 * lightweight model swarms
 * compute-aware AI governance
 
-## Repository Structure
-
-```text
-.
-├── README.md
-├── CHANGELOG.md
-├── schemas/
-│   └── carrier-swarm-mission.schema.json
-├── examples/
-│   └── carrier-swarm-mission.example.yaml
-└── scripts/
-    └── validate_examples.py
-```
-
 ## Roadmap
 
 ### v0.1 — Carrier Swarm Mission
 
 Define the minimal mission record for carrier-swarm inference relay.
 
+Current status:
+
+* README created
+* JSON Schema created
+* YAML example created
+* validation script created
+* GitHub Actions workflow created
+* validation passed
+
 ### v0.2 — Wing Role Registry
 
-Define standard roles for wing models, including scout, router, compressor, verifier, guard, and memory agent.
+Define standard roles for wing models, including:
+
+* scout
+* router
+* compressor
+* verifier
+* safety guard
+* memory agent
+* trace agent
 
 ### v0.3 — Activation Policy
 
 Define when the carrier model should be activated and when early exit is allowed.
 
+Potential fields include:
+
+* confidence threshold
+* ambiguity threshold
+* risk threshold
+* escalation reason
+* early exit condition
+* human review trigger
+
 ### v0.4 — Trace Receipt Integration
 
 Connect carrier-swarm missions with trace receipts and contribution records.
 
+Potential fields include:
+
+* wing contribution record
+* carrier activation record
+* filtered event record
+* escalation explanation
+* external trace receipt ID
+
 ### v0.5 — Compute and Royalty Integration
 
-Add compute cost, energy cost, contribution weight, and reward allocation fields.
+Add compute cost, optional energy cost, contribution weight, and reward allocation fields.
 
-## Status
+Potential integrations include:
 
-This repository is currently in early specification development.
+* Compute Access Royalty OS
+* Trace Receipt Protocol
+* Origin Structure Market
 
-Initial focus:
+## Conceptual Position
 
-* define the carrier-swarm mission schema
-* provide a valid example
-* validate examples with a simple script
-* prepare for `v0.1.0-candidate`
+Carrier Swarm Inference Architecture does not reject large models.
+
+It repositions them.
+
+A large model should not be invoked as the default path for every input.
+It should function as a carrier: a coordination, integration, memory, and final reasoning node.
+
+Wing models perform the first movement.
+
+The carrier integrates only when needed.
+
+This turns AI inference from a monolithic pipeline into a traceable relay system.
+
+In short:
+
+> Monolith AGI is replaced by Carrier-Swarm AI.
 
 ## License
 
 TBD.
+
