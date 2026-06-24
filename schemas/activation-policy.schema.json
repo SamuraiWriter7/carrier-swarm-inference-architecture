@@ -1,0 +1,315 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://github.com/SamuraiWriter7/carrier-swarm-inference-architecture/schemas/activation-policy.schema.json",
+"title": "Activation Policy",
+"description": "A schema for defining when a carrier model should be activated, when early exit is allowed, and how escalation decisions are justified in a carrier-swarm inference architecture.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"policy_id",
+"version",
+"description",
+"default_carrier_activation",
+"early_exit",
+"carrier_activation_triggers",
+"escalation_decision",
+"trace_requirements",
+"human_governance"
+],
+"properties": {
+"policy_id": {
+"type": "string",
+"description": "A unique identifier for the activation policy.",
+"minLength": 1
+},
+"version": {
+"type": "string",
+"description": "Version identifier for this activation policy.",
+"minLength": 1
+},
+"description": {
+"type": "string",
+"description": "Human-readable description of the activation policy."
+},
+"default_carrier_activation": {
+"type": "string",
+"description": "Default behavior for carrier model activation.",
+"enum": [
+"on_demand",
+"manual_only",
+"always",
+"never"
+]
+},
+"early_exit": {
+"type": "object",
+"description": "Rules for ending a mission before carrier activation.",
+"additionalProperties": false,
+"required": [
+"enabled",
+"allowed_when",
+"requires_trace_record"
+],
+"properties": {
+"enabled": {
+"type": "boolean",
+"description": "Whether early exit is allowed."
+},
+"allowed_when": {
+"type": "array",
+"description": "Conditions under which a mission may end without carrier activation.",
+"minItems": 1,
+"items": {
+"type": "string",
+"enum": [
+"high_confidence_local_result",
+"low_risk",
+"routine_input",
+"duplicate_input",
+"sufficient_wing_consensus",
+"human_review_not_required",
+"no_safety_concern",
+"trace_complete"
+]
+}
+},
+"requires_trace_record": {
+"type": "boolean",
+"description": "Whether early exit must still produce a trace record."
+},
+"minimum_confidence": {
+"type": "number",
+"description": "Minimum confidence required for early exit.",
+"minimum": 0,
+"maximum": 1
+},
+"maximum_risk_level": {
+"type": "string",
+"description": "Maximum risk level allowed for early exit.",
+"enum": [
+"none",
+"low",
+"medium",
+"high",
+"critical"
+]
+}
+}
+},
+"carrier_activation_triggers": {
+"type": "array",
+"description": "Conditions that require or recommend carrier activation.",
+"minItems": 1,
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"trigger_id",
+"condition",
+"severity",
+"activation_required"
+],
+"properties": {
+"trigger_id": {
+"type": "string",
+"description": "Machine-readable trigger identifier.",
+"pattern": "^[a-z0-9_\-]+$"
+},
+"condition": {
+"type": "string",
+"description": "Condition that may trigger carrier activation.",
+"enum": [
+"low_confidence",
+"high_ambiguity",
+"high_risk",
+"critical_risk",
+"safety_concern",
+"conflicting_wing_reports",
+"source_verification_failed",
+"memory_conflict_detected",
+"trace_incomplete",
+"high_value_decision",
+"human_review_required",
+"carrier_requested_by_human"
+]
+},
+"severity": {
+"type": "string",
+"description": "Severity of the trigger.",
+"enum": [
+"low",
+"medium",
+"high",
+"critical"
+]
+},
+"activation_required": {
+"type": "boolean",
+"description": "Whether this trigger requires carrier activation."
+},
+"human_review_required": {
+"type": "boolean",
+"description": "Whether this trigger also requires human review."
+},
+"description": {
+"type": "string",
+"description": "Human-readable explanation of the trigger."
+}
+}
+}
+},
+"thresholds": {
+"type": "object",
+"description": "Optional numeric thresholds for activation decisions.",
+"additionalProperties": false,
+"properties": {
+"minimum_wing_confidence_for_early_exit": {
+"type": "number",
+"minimum": 0,
+"maximum": 1
+},
+"maximum_ambiguity_for_early_exit": {
+"type": "number",
+"minimum": 0,
+"maximum": 1
+},
+"minimum_consensus_ratio": {
+"type": "number",
+"minimum": 0,
+"maximum": 1
+},
+"risk_score_for_carrier_activation": {
+"type": "number",
+"minimum": 0,
+"maximum": 1
+},
+"risk_score_for_human_review": {
+"type": "number",
+"minimum": 0,
+"maximum": 1
+}
+}
+},
+"escalation_decision": {
+"type": "object",
+"description": "Rules for recording escalation decisions.",
+"additionalProperties": false,
+"required": [
+"decision_required",
+"allowed_decisions",
+"justification_required"
+],
+"properties": {
+"decision_required": {
+"type": "boolean",
+"description": "Whether every mission must record an activation or early-exit decision."
+},
+"allowed_decisions": {
+"type": "array",
+"description": "Allowed escalation decision outcomes.",
+"minItems": 1,
+"items": {
+"type": "string",
+"enum": [
+"early_exit",
+"continue_with_wings",
+"activate_carrier",
+"request_human_review",
+"halt_mission"
+]
+}
+},
+"justification_required": {
+"type": "boolean",
+"description": "Whether the decision must include a justification."
+},
+"required_fields": {
+"type": "array",
+"description": "Fields required in a decision record.",
+"items": {
+"type": "string",
+"enum": [
+"decision",
+"reason",
+"triggered_by",
+"confidence",
+"risk_level",
+"human_review_status",
+"trace_record_id"
+]
+}
+}
+}
+},
+"trace_requirements": {
+"type": "object",
+"description": "Trace requirements for activation policy decisions.",
+"additionalProperties": false,
+"required": [
+"log_activation_decision",
+"log_early_exit_decision",
+"log_trigger_conditions",
+"log_thresholds",
+"log_human_review_status"
+],
+"properties": {
+"log_activation_decision": {
+"type": "boolean",
+"description": "Whether carrier activation decisions must be logged."
+},
+"log_early_exit_decision": {
+"type": "boolean",
+"description": "Whether early exit decisions must be logged."
+},
+"log_trigger_conditions": {
+"type": "boolean",
+"description": "Whether trigger conditions must be logged."
+},
+"log_thresholds": {
+"type": "boolean",
+"description": "Whether threshold values must be logged."
+},
+"log_human_review_status": {
+"type": "boolean",
+"description": "Whether human review status must be logged."
+}
+}
+},
+"human_governance": {
+"type": "object",
+"description": "Human governance boundary for carrier activation decisions.",
+"additionalProperties": false,
+"required": [
+"human_review_available",
+"human_review_required_when"
+],
+"properties": {
+"human_review_available": {
+"type": "boolean",
+"description": "Whether human review is available for this policy."
+},
+"human_review_required_when": {
+"type": "array",
+"description": "Conditions under which human review is required.",
+"items": {
+"type": "string",
+"enum": [
+"high_risk",
+"critical_risk",
+"safety_concern",
+"high_value_decision",
+"conflicting_wing_reports",
+"source_verification_failed",
+"human_impacting_decision",
+"attribution_or_reward_allocation"
+]
+}
+},
+"note": {
+"type": "string",
+"description": "Optional governance note."
+}
+}
+}
+}
+}
