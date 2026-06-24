@@ -1,0 +1,385 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://github.com/SamuraiWriter7/carrier-swarm-inference-architecture/schemas/trace-receipt-integration.schema.json",
+"title": "Trace Receipt Integration",
+"description": "A schema for integrating carrier-swarm inference missions with trace receipts, contribution records, activation records, early exit records, and audit boundaries.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"integration_id",
+"version",
+"description",
+"mission_reference",
+"trace_receipts",
+"contribution_records",
+"carrier_activation_record",
+"audit_boundary"
+],
+"properties": {
+"integration_id": {
+"type": "string",
+"description": "A unique identifier for the trace receipt integration record.",
+"minLength": 1
+},
+"version": {
+"type": "string",
+"description": "Version identifier for this integration record.",
+"minLength": 1
+},
+"description": {
+"type": "string",
+"description": "Human-readable description of the trace receipt integration."
+},
+"mission_reference": {
+"type": "object",
+"description": "Reference to the related Carrier Swarm Mission.",
+"additionalProperties": false,
+"required": [
+"mission_id",
+"mission_schema",
+"mission_status"
+],
+"properties": {
+"mission_id": {
+"type": "string",
+"description": "Identifier of the related carrier-swarm mission.",
+"minLength": 1
+},
+"mission_schema": {
+"type": "string",
+"description": "Schema used by the referenced mission.",
+"enum": [
+"carrier-swarm-mission.schema.json"
+]
+},
+"mission_status": {
+"type": "string",
+"description": "Current status of the referenced mission.",
+"enum": [
+"pending",
+"completed",
+"early_exited",
+"carrier_activated",
+"human_review_required",
+"halted"
+]
+},
+"activation_policy_id": {
+"type": "string",
+"description": "Optional identifier of the activation policy used by the mission."
+}
+}
+},
+"trace_receipts": {
+"type": "array",
+"description": "Trace receipts generated during the carrier-swarm mission.",
+"minItems": 1,
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"receipt_id",
+"receipt_type",
+"generated_by",
+"related_stage",
+"summary",
+"required_for_audit"
+],
+"properties": {
+"receipt_id": {
+"type": "string",
+"description": "Unique identifier for the trace receipt.",
+"minLength": 1
+},
+"receipt_type": {
+"type": "string",
+"description": "Type of trace receipt.",
+"enum": [
+"mission_trace",
+"wing_report",
+"carrier_activation",
+"early_exit",
+"escalation",
+"human_review",
+"contribution",
+"filtered_event"
+]
+},
+"generated_by": {
+"type": "object",
+"description": "Node or actor that generated the receipt.",
+"additionalProperties": false,
+"required": [
+"node_id",
+"node_type",
+"role"
+],
+"properties": {
+"node_id": {
+"type": "string",
+"description": "Identifier of the node or actor.",
+"minLength": 1
+},
+"node_type": {
+"type": "string",
+"description": "Type of node or actor.",
+"enum": [
+"carrier_node",
+"wing_node",
+"trace_agent",
+"human_operator",
+"system"
+]
+},
+"role": {
+"type": "string",
+"description": "Role of the node or actor in the mission.",
+"minLength": 1
+}
+}
+},
+"related_stage": {
+"type": "string",
+"description": "Mission stage related to this receipt.",
+"enum": [
+"dispatch",
+"local_inference",
+"event_filtering",
+"return_report",
+"activation_decision",
+"carrier_integration",
+"human_review",
+"trace_record"
+]
+},
+"summary": {
+"type": "string",
+"description": "Human-readable summary of the receipt.",
+"minLength": 1
+},
+"external_reference_id": {
+"type": "string",
+"description": "Optional external trace receipt or audit record identifier."
+},
+"required_for_audit": {
+"type": "boolean",
+"description": "Whether this receipt is required for future audit."
+}
+}
+}
+},
+"contribution_records": {
+"type": "array",
+"description": "Contribution records for wing, carrier, trace, or human participants.",
+"minItems": 1,
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"contributor_id",
+"contributor_type",
+"role",
+"contribution_type",
+"contribution_summary",
+"contribution_weight"
+],
+"properties": {
+"contributor_id": {
+"type": "string",
+"description": "Identifier of the contributor.",
+"minLength": 1
+},
+"contributor_type": {
+"type": "string",
+"description": "Type of contributor.",
+"enum": [
+"wing_node",
+"carrier_node",
+"trace_agent",
+"human_operator",
+"external_protocol"
+]
+},
+"role": {
+"type": "string",
+"description": "Contributor role.",
+"minLength": 1
+},
+"contribution_type": {
+"type": "string",
+"description": "Type of contribution made.",
+"enum": [
+"scouting",
+"routing",
+"compression",
+"verification",
+"safety_assessment",
+"memory_lookup",
+"trace_generation",
+"carrier_integration",
+"human_review"
+]
+},
+"contribution_summary": {
+"type": "string",
+"description": "Human-readable summary of the contribution.",
+"minLength": 1
+},
+"contribution_weight": {
+"type": "number",
+"description": "Relative contribution weight between 0 and 1.",
+"minimum": 0,
+"maximum": 1
+},
+"eligible_for_reward_allocation": {
+"type": "boolean",
+"description": "Whether this contribution may be used by future royalty or compute allocation layers."
+}
+}
+}
+},
+"carrier_activation_record": {
+"type": "object",
+"description": "Record of whether and why the carrier model was activated.",
+"additionalProperties": false,
+"required": [
+"carrier_activated",
+"decision_reason",
+"triggered_by",
+"activation_policy_id",
+"trace_recorded"
+],
+"properties": {
+"carrier_activated": {
+"type": "boolean",
+"description": "Whether the carrier model was activated."
+},
+"decision_reason": {
+"type": "string",
+"description": "Reason for carrier activation or non-activation.",
+"minLength": 1
+},
+"triggered_by": {
+"type": "array",
+"description": "Conditions, nodes, or reports that triggered the decision.",
+"minItems": 1,
+"items": {
+"type": "string"
+}
+},
+"activation_policy_id": {
+"type": "string",
+"description": "Identifier of the activation policy used.",
+"minLength": 1
+},
+"trace_recorded": {
+"type": "boolean",
+"description": "Whether the activation decision was recorded."
+}
+}
+},
+"early_exit_records": {
+"type": "array",
+"description": "Optional records of early exit decisions.",
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"early_exit_allowed",
+"reason",
+"decided_by",
+"trace_recorded"
+],
+"properties": {
+"early_exit_allowed": {
+"type": "boolean",
+"description": "Whether early exit was allowed."
+},
+"reason": {
+"type": "string",
+"description": "Reason for allowing or rejecting early exit.",
+"minLength": 1
+},
+"decided_by": {
+"type": "string",
+"description": "Node, policy, or actor that made the early exit decision.",
+"minLength": 1
+},
+"trace_recorded": {
+"type": "boolean",
+"description": "Whether the early exit decision was recorded."
+}
+}
+}
+},
+"filtered_event_records": {
+"type": "array",
+"description": "Optional records of events filtered before carrier activation.",
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"event_id",
+"filtered_by",
+"filter_reason",
+"retained_summary"
+],
+"properties": {
+"event_id": {
+"type": "string",
+"description": "Identifier of the filtered event.",
+"minLength": 1
+},
+"filtered_by": {
+"type": "string",
+"description": "Wing node or policy that filtered the event.",
+"minLength": 1
+},
+"filter_reason": {
+"type": "string",
+"description": "Reason the event was filtered.",
+"minLength": 1
+},
+"retained_summary": {
+"type": "string",
+"description": "Summary retained for traceability.",
+"minLength": 1
+}
+}
+}
+},
+"audit_boundary": {
+"type": "object",
+"description": "Audit and governance boundary for the integrated trace record.",
+"additionalProperties": false,
+"required": [
+"trace_complete",
+"human_review_required",
+"external_trace_link_allowed",
+"royalty_integration_ready"
+],
+"properties": {
+"trace_complete": {
+"type": "boolean",
+"description": "Whether the trace record is complete enough for review."
+},
+"human_review_required": {
+"type": "boolean",
+"description": "Whether human review is required."
+},
+"external_trace_link_allowed": {
+"type": "boolean",
+"description": "Whether this record may link to external trace receipt protocols."
+},
+"royalty_integration_ready": {
+"type": "boolean",
+"description": "Whether this record contains enough contribution information for future royalty or compute allocation integration."
+},
+"audit_note": {
+"type": "string",
+"description": "Optional human-readable audit note."
+}
+}
+}
+}
+}
