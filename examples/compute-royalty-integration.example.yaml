@@ -1,0 +1,142 @@
+integration_id: compute-royalty-integration-v0.5
+version: v0.5.0-candidate
+description: >
+  A compute and royalty integration record for a carrier-swarm inference mission.
+  This record connects compute usage, optional energy cost, contribution weights,
+  reward eligibility, and royalty hooks to the mission trace.
+
+mission_reference:
+  mission_id: mission-2026-001
+  mission_schema: carrier-swarm-mission.schema.json
+  mission_status: carrier_activated
+
+trace_reference:
+  trace_integration_id: trace-receipt-integration-v0.4
+  trace_schema: trace-receipt-integration.schema.json
+  trace_complete: true
+  external_trace_reference_id: trace-carrier-swarm-2026-001
+
+compute_records:
+  - node_id: scout-model-01
+    node_type: wing_node
+    role: scout
+    compute_unit: inference_call
+    compute_cost: 1
+    energy_cost_mj: 12.5
+    monetary_cost_estimate: 0.001
+    cost_recorded: true
+    cost_estimation_method: estimated
+
+  - node_id: router-model-01
+    node_type: wing_node
+    role: router
+    compute_unit: inference_call
+    compute_cost: 1
+    energy_cost_mj: 10.2
+    monetary_cost_estimate: 0.001
+    cost_recorded: true
+    cost_estimation_method: estimated
+
+  - node_id: compression-model-01
+    node_type: wing_node
+    role: compressor
+    compute_unit: inference_call
+    compute_cost: 1
+    energy_cost_mj: 18.7
+    monetary_cost_estimate: 0.002
+    cost_recorded: true
+    cost_estimation_method: estimated
+
+  - node_id: local-carrier-model-01
+    node_type: carrier_node
+    role: integration_and_final_reasoning
+    compute_unit: inference_call
+    compute_cost: 1
+    energy_cost_mj: 125.0
+    monetary_cost_estimate: 0.015
+    cost_recorded: true
+    cost_estimation_method: estimated
+
+  - node_id: human-operator-01
+    node_type: human_operator
+    role: reviewer
+    compute_unit: manual_review
+    compute_cost: 1
+    monetary_cost_estimate: 0
+    cost_recorded: true
+    cost_estimation_method: declared
+
+contribution_allocation:
+  allocation_method: hybrid
+  total_contribution_weight: 1.0
+  participants:
+    - participant_id: scout-model-01
+      participant_type: wing_node
+      role: scout
+      contribution_weight: 0.25
+      reward_eligible: true
+      allocation_note: >
+        Scout wing performed initial observation and confidence assessment.
+
+    - participant_id: router-model-01
+      participant_type: wing_node
+      role: router
+      contribution_weight: 0.2
+      reward_eligible: true
+      allocation_note: >
+        Router wing determined the next inference route.
+
+    - participant_id: compression-model-01
+      participant_type: wing_node
+      role: compressor
+      contribution_weight: 0.2
+      reward_eligible: true
+      allocation_note: >
+        Compression wing generated a compact return report.
+
+    - participant_id: local-carrier-model-01
+      participant_type: carrier_node
+      role: integration_and_final_reasoning
+      contribution_weight: 0.25
+      reward_eligible: true
+      allocation_note: >
+        Carrier node integrated wing reports and prepared the final reasoning boundary.
+
+    - participant_id: human-operator-01
+      participant_type: human_operator
+      role: reviewer
+      contribution_weight: 0.1
+      reward_eligible: false
+      allocation_note: >
+        Human operator provided governance review and final oversight.
+
+royalty_hooks:
+  - hook_id: royalty-hook-001
+    hook_type: royalty_allocation
+    target_protocol: compute-access-royalty-os
+    status: requires_human_review
+    allocation_reference_id: allocation-carrier-swarm-2026-001
+    human_review_required: true
+
+  - hook_id: origin-attribution-hook-001
+    hook_type: origin_attribution
+    target_protocol: origin-structure-market
+    status: pending
+    allocation_reference_id: origin-link-carrier-swarm-2026-001
+    human_review_required: true
+
+  - hook_id: trace-export-hook-001
+    hook_type: audit_export
+    target_protocol: trace-receipt-protocol
+    status: ready
+    allocation_reference_id: trace-export-carrier-swarm-2026-001
+    human_review_required: false
+
+allocation_boundary:
+  allocation_ready: true
+  requires_human_review: true
+  allows_automatic_distribution: false
+  audit_required: true
+  boundary_note: >
+    This record is ready for downstream compute and royalty integration, but
+    automatic distribution is disabled until human review and audit are complete.
