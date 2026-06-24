@@ -37,6 +37,11 @@ VALIDATION_TARGETS = [
         "schema": ROOT_DIR / "schemas" / "activation-policy.schema.json",
         "example": ROOT_DIR / "examples" / "activation-policy.example.yaml",
     },
+    {
+        "name": "Trace Receipt Integration",
+        "schema": ROOT_DIR / "schemas" / "trace-receipt-integration.schema.json",
+        "example": ROOT_DIR / "examples" / "trace-receipt-integration.example.yaml",
+    },
 ]
 
 
@@ -116,4 +121,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
