@@ -46,7 +46,7 @@
 "role_id": {
 "type": "string",
 "description": "Machine-readable role identifier.",
-"pattern": "^[a-z0-9_\-]+$"
+"pattern": "^[a-z0-9_\\-]+$"
 },
 "display_name": {
 "type": "string",
