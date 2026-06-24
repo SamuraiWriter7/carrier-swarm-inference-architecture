@@ -1,0 +1,364 @@
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"$id": "https://github.com/SamuraiWriter7/carrier-swarm-inference-architecture/schemas/compute-royalty-integration.schema.json",
+"title": "Compute and Royalty Integration",
+"description": "A schema for connecting carrier-swarm inference traces with compute cost records, optional energy cost records, contribution weights, reward allocation readiness, and royalty hooks.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"integration_id",
+"version",
+"description",
+"mission_reference",
+"trace_reference",
+"compute_records",
+"contribution_allocation",
+"royalty_hooks",
+"allocation_boundary"
+],
+"properties": {
+"integration_id": {
+"type": "string",
+"description": "A unique identifier for the compute and royalty integration record.",
+"minLength": 1
+},
+"version": {
+"type": "string",
+"description": "Version identifier for this integration record.",
+"minLength": 1
+},
+"description": {
+"type": "string",
+"description": "Human-readable description of the compute and royalty integration."
+},
+"mission_reference": {
+"type": "object",
+"description": "Reference to the related Carrier Swarm Mission.",
+"additionalProperties": false,
+"required": [
+"mission_id",
+"mission_schema",
+"mission_status"
+],
+"properties": {
+"mission_id": {
+"type": "string",
+"description": "Identifier of the related carrier-swarm mission.",
+"minLength": 1
+},
+"mission_schema": {
+"type": "string",
+"description": "Schema used by the referenced mission.",
+"enum": [
+"carrier-swarm-mission.schema.json"
+]
+},
+"mission_status": {
+"type": "string",
+"description": "Current status of the referenced mission.",
+"enum": [
+"pending",
+"completed",
+"early_exited",
+"carrier_activated",
+"human_review_required",
+"halted"
+]
+}
+}
+},
+"trace_reference": {
+"type": "object",
+"description": "Reference to the related trace receipt integration record.",
+"additionalProperties": false,
+"required": [
+"trace_integration_id",
+"trace_schema",
+"trace_complete"
+],
+"properties": {
+"trace_integration_id": {
+"type": "string",
+"description": "Identifier of the related trace receipt integration record.",
+"minLength": 1
+},
+"trace_schema": {
+"type": "string",
+"description": "Schema used by the referenced trace integration.",
+"enum": [
+"trace-receipt-integration.schema.json"
+]
+},
+"trace_complete": {
+"type": "boolean",
+"description": "Whether the trace record is complete enough to support compute or royalty allocation."
+},
+"external_trace_reference_id": {
+"type": "string",
+"description": "Optional external trace receipt or audit record identifier."
+}
+}
+},
+"compute_records": {
+"type": "array",
+"description": "Compute and optional energy cost records for carrier, wing, trace, or human participants.",
+"minItems": 1,
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"node_id",
+"node_type",
+"role",
+"compute_unit",
+"compute_cost",
+"cost_recorded"
+],
+"properties": {
+"node_id": {
+"type": "string",
+"description": "Identifier of the node or actor.",
+"minLength": 1
+},
+"node_type": {
+"type": "string",
+"description": "Type of node or actor.",
+"enum": [
+"carrier_node",
+"wing_node",
+"trace_agent",
+"human_operator",
+"external_protocol"
+]
+},
+"role": {
+"type": "string",
+"description": "Role of the node or actor in the mission.",
+"minLength": 1
+},
+"compute_unit": {
+"type": "string",
+"description": "Unit used to describe compute usage.",
+"enum": [
+"token",
+"inference_call",
+"model_step",
+"cpu_ms",
+"gpu_ms",
+"npu_ms",
+"edge_event",
+"manual_review"
+]
+},
+"compute_cost": {
+"type": "number",
+"description": "Numeric compute cost value in the selected compute unit.",
+"minimum": 0
+},
+"energy_cost_mj": {
+"type": "number",
+"description": "Optional energy cost in millijoules.",
+"minimum": 0
+},
+"monetary_cost_estimate": {
+"type": "number",
+"description": "Optional monetary cost estimate for this node contribution.",
+"minimum": 0
+},
+"cost_recorded": {
+"type": "boolean",
+"description": "Whether compute cost was recorded."
+},
+"cost_estimation_method": {
+"type": "string",
+"description": "Method used to measure or estimate cost.",
+"enum": [
+"measured",
+"estimated",
+"declared",
+"not_available"
+]
+}
+}
+}
+},
+"contribution_allocation": {
+"type": "object",
+"description": "Contribution weighting and allocation readiness for the mission.",
+"additionalProperties": false,
+"required": [
+"allocation_method",
+"total_contribution_weight",
+"participants"
+],
+"properties": {
+"allocation_method": {
+"type": "string",
+"description": "Method used to assign contribution weights.",
+"enum": [
+"manual",
+"trace_weighted",
+"compute_weighted",
+"hybrid",
+"policy_defined"
+]
+},
+"total_contribution_weight": {
+"type": "number",
+"description": "Total contribution weight across all participants.",
+"minimum": 0
+},
+"participants": {
+"type": "array",
+"description": "Participant allocation records.",
+"minItems": 1,
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"participant_id",
+"participant_type",
+"role",
+"contribution_weight",
+"reward_eligible"
+],
+"properties": {
+"participant_id": {
+"type": "string",
+"description": "Identifier of the participant.",
+"minLength": 1
+},
+"participant_type": {
+"type": "string",
+"description": "Type of participant.",
+"enum": [
+"carrier_node",
+"wing_node",
+"trace_agent",
+"human_operator",
+"origin_contributor",
+"external_protocol"
+]
+},
+"role": {
+"type": "string",
+"description": "Participant role.",
+"minLength": 1
+},
+"contribution_weight": {
+"type": "number",
+"description": "Relative contribution weight.",
+"minimum": 0,
+"maximum": 1
+},
+"reward_eligible": {
+"type": "boolean",
+"description": "Whether this participant is eligible for reward allocation."
+},
+"allocation_note": {
+"type": "string",
+"description": "Optional note explaining allocation logic."
+}
+}
+}
+}
+}
+},
+"royalty_hooks": {
+"type": "array",
+"description": "Royalty or reward allocation hooks for downstream systems.",
+"minItems": 1,
+"items": {
+"type": "object",
+"additionalProperties": false,
+"required": [
+"hook_id",
+"hook_type",
+"target_protocol",
+"status"
+],
+"properties": {
+"hook_id": {
+"type": "string",
+"description": "Unique identifier for the royalty or reward hook.",
+"minLength": 1
+},
+"hook_type": {
+"type": "string",
+"description": "Type of hook being defined.",
+"enum": [
+"royalty_allocation",
+"compute_access_allocation",
+"reward_distribution",
+"origin_attribution",
+"audit_export"
+]
+},
+"target_protocol": {
+"type": "string",
+"description": "Target protocol or downstream system.",
+"enum": [
+"compute-access-royalty-os",
+"trace-receipt-protocol",
+"ai-search-trace-receipt-standard",
+"origin-structure-market",
+"external_royalty_system",
+"none"
+]
+},
+"status": {
+"type": "string",
+"description": "Status of the hook.",
+"enum": [
+"ready",
+"pending",
+"disabled",
+"requires_human_review"
+]
+},
+"allocation_reference_id": {
+"type": "string",
+"description": "Optional reference to an allocation, royalty, or audit record."
+},
+"human_review_required": {
+"type": "boolean",
+"description": "Whether human review is required before this hook is used."
+}
+}
+}
+},
+"allocation_boundary": {
+"type": "object",
+"description": "Boundary conditions for compute and royalty integration.",
+"additionalProperties": false,
+"required": [
+"allocation_ready",
+"requires_human_review",
+"allows_automatic_distribution",
+"audit_required"
+],
+"properties": {
+"allocation_ready": {
+"type": "boolean",
+"description": "Whether the record is ready for downstream allocation."
+},
+"requires_human_review": {
+"type": "boolean",
+"description": "Whether human review is required before allocation."
+},
+"allows_automatic_distribution": {
+"type": "boolean",
+"description": "Whether automatic reward or royalty distribution is allowed."
+},
+"audit_required": {
+"type": "boolean",
+"description": "Whether audit is required before finalization."
+},
+"boundary_note": {
+"type": "string",
+"description": "Optional note describing allocation limits or governance conditions."
+}
+}
+}
+}
+}
