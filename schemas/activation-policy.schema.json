@@ -113,7 +113,7 @@
 "trigger_id": {
 "type": "string",
 "description": "Machine-readable trigger identifier.",
-"pattern": "^[a-z0-9_\-]+$"
+"pattern": "^[a-z0-9_\\-]+$"
 },
 "condition": {
 "type": "string",
