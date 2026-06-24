@@ -4,14 +4,22 @@ A lightweight protocol for coordinating central carrier models and specialized w
 
 ## Status
 
-**Current version:** `v0.1.0-candidate`
-**Current focus:** Carrier Swarm Mission
+**Current version:** `v0.2.0-candidate`
+**Current focus:** Wing Role Registry
 **Validation status:** GitHub Actions passed
 
-This repository has reached its first functional validation point.
+This repository has reached its second functional validation point.
 
-The initial schema, example, validation script, and GitHub Actions workflow are in place.
-The `Carrier Swarm Mission` example validates successfully against the JSON Schema.
+The repository now includes:
+
+* `Carrier Swarm Mission`
+* `Wing Role Registry`
+* JSON Schemas
+* YAML examples
+* validation script
+* GitHub Actions workflow
+
+Both v0.1 and v0.2 examples validate successfully against their schemas.
 
 ## Overview
 
@@ -20,12 +28,12 @@ The `Carrier Swarm Mission` example validates successfully against the JSON Sche
 The carrier model is not treated as an always-on monolithic intelligence.
 Instead, it serves as a coordination, integration, memory, and final reasoning node that is activated only when needed.
 
-Smaller wing models handle local detection, classification, routing, compression, verification, and preliminary judgment before escalation to the carrier.
+Smaller wing models handle local detection, classification, routing, compression, verification, safety checking, memory lookup, and trace logging before escalation to the carrier.
 
 The core principle is:
 
 > Do not invoke the largest model by default.
-> Let smaller models scout, filter, compress, and route first.
+> Let smaller models scout, filter, compress, verify, route, and record first.
 
 ## Why This Matters
 
@@ -53,7 +61,7 @@ Wing Model: Scout / Classifier / Router
   ↓
 Local Inference
   ↓
-Event Filtering
+Compression / Verification / Safety Check
   ↓
 Return Report
   ↓
@@ -115,9 +123,38 @@ A minimal relay cycle consists of:
 6. human review
 7. trace record
 
-## v0.1 Scope
+### Wing Role Registry
 
-The first version of this repository defines a minimal record format for a **Carrier Swarm Mission**.
+The **Wing Role Registry** defines standardized wing model roles.
+
+Each role may define:
+
+* role identifier
+* display name
+* category
+* responsibility
+* typical inputs
+* typical outputs
+* activation mode
+* escalation permission
+* activation conditions
+* trace requirements
+* human governance note
+
+The purpose of the registry is to prevent wing models from becoming vague or redundant.
+
+Each wing should know:
+
+* what it does;
+* when it activates;
+* whether it can request carrier activation;
+* whether it can recommend early exit;
+* whether it can request human review;
+* what it must record.
+
+## v0.1 Scope — Carrier Swarm Mission
+
+The first version defines a minimal record format for a **Carrier Swarm Mission**.
 
 A Carrier Swarm Mission records:
 
@@ -130,7 +167,23 @@ A Carrier Swarm Mission records:
 * trace requirements
 * human review boundary
 
-## Example
+## v0.2 Scope — Wing Role Registry
+
+The second version defines a standard registry for wing model roles.
+
+The initial registry includes:
+
+* Scout Wing
+* Router Wing
+* Compression Wing
+* Verification Wing
+* Safety Guard Wing
+* Memory Wing
+* Trace Wing
+
+This turns the carrier-swarm model from a general relay concept into a structured role-based architecture.
+
+## Example: Carrier Swarm Mission
 
 ```yaml
 mission_id: mission-2026-001
@@ -216,6 +269,50 @@ human_review:
   reviewer_role: human_operator
 ```
 
+## Example: Wing Role Registry
+
+```yaml
+registry_id: wing-role-registry-v0.2
+version: v0.2.0-candidate
+description: >
+  A standard registry of wing model roles for Carrier Swarm Inference Architecture.
+  Wing roles define how lightweight models scout, route, compress, verify, guard,
+  remember, and trace inference missions before carrier activation.
+
+roles:
+  - role_id: scout
+    display_name: Scout Wing
+    category: scouting
+    responsibility: >
+      Performs initial observation and determines whether an input appears simple,
+      repetitive, uncertain, risky, or worth escalating.
+    typical_inputs:
+      - raw_input
+      - local_event
+      - sensor_event
+    typical_outputs:
+      - initial_observation
+      - confidence_score
+      - early_exit_recommendation
+      - escalation_recommendation
+    activation_mode: always_first
+    escalation_permission:
+      can_request_carrier_activation: true
+      can_end_mission_early: true
+      can_request_human_review: false
+    activation_conditions:
+      - new_input_received
+      - sensor_event_detected
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: true
+      log_escalation_reason: true
+    human_governance_note: >
+      Scout wings may recommend escalation or early exit, but should not make
+      final high-impact decisions.
+```
+
 ## Design Principles
 
 ### 1. Carrier Is Not a Monolith
@@ -238,8 +335,24 @@ They reduce unnecessary large-model activation by handling:
 * local detection
 * initial filtering
 * compression
+* verification
+* safety checks
+* memory lookup
+* trace logging
 
-### 3. Escalation Must Be Explicit
+### 3. Roles Must Be Explicit
+
+Wing models should not be vague helper agents.
+
+Each wing role should define:
+
+* responsibility
+* activation mode
+* escalation permission
+* trace requirements
+* human governance boundary
+
+### 4. Escalation Must Be Explicit
 
 Carrier activation should happen only when clearly justified.
 
@@ -252,7 +365,7 @@ Typical escalation reasons include:
 * high-value decision
 * human review requirement
 
-### 4. Trace Everything
+### 5. Trace Everything
 
 Every mission should produce a traceable record.
 
@@ -265,7 +378,7 @@ The system should be able to explain:
 * why the carrier was activated
 * whether human review occurred
 
-### 5. Human Governance Remains Central
+### 6. Human Governance Remains Central
 
 The carrier model is not the final authority in high-impact contexts.
 
@@ -297,6 +410,10 @@ Expected output:
   schema : schemas/carrier-swarm-mission.schema.json
   example: examples/carrier-swarm-mission.example.yaml
 [ok] carrier-swarm-mission.example.yaml is valid
+[validate] Wing Role Registry
+  schema : schemas/wing-role-registry.schema.json
+  example: examples/wing-role-registry.example.yaml
+[ok] wing-role-registry.example.yaml is valid
 [ok] all examples are valid
 ```
 
@@ -306,7 +423,7 @@ The repository also includes a GitHub Actions workflow:
 .github/workflows/validate.yml
 ```
 
-This workflow validates the example file automatically on push, pull request, or manual dispatch.
+This workflow validates the example files automatically on push, pull request, or manual dispatch.
 
 ## Repository Structure
 
@@ -315,9 +432,11 @@ This workflow validates the example file automatically on push, pull request, or
 ├── README.md
 ├── CHANGELOG.md
 ├── schemas/
-│   └── carrier-swarm-mission.schema.json
+│   ├── carrier-swarm-mission.schema.json
+│   └── wing-role-registry.schema.json
 ├── examples/
-│   └── carrier-swarm-mission.example.yaml
+│   ├── carrier-swarm-mission.example.yaml
+│   └── wing-role-registry.example.yaml
 ├── scripts/
 │   └── validate_examples.py
 └── .github/
@@ -338,7 +457,7 @@ Carrier Swarm Inference Architecture can connect with:
 
 This repository focuses on the inference relay layer:
 
-> How should inference be distributed, routed, escalated, and recorded?
+> How should inference be distributed, routed, escalated, role-assigned, and recorded?
 
 ## Intended Use Cases
 
@@ -352,6 +471,7 @@ This repository focuses on the inference relay layer:
 * distributed sensor intelligence
 * lightweight model swarms
 * compute-aware AI governance
+* role-based AI agent coordination
 
 ## Roadmap
 
@@ -359,7 +479,7 @@ This repository focuses on the inference relay layer:
 
 Define the minimal mission record for carrier-swarm inference relay.
 
-Current status:
+Status:
 
 * README created
 * JSON Schema created
@@ -370,7 +490,16 @@ Current status:
 
 ### v0.2 — Wing Role Registry
 
-Define standard roles for wing models, including:
+Define standard roles for wing models.
+
+Status:
+
+* Wing Role Registry schema created
+* Wing Role Registry example created
+* validation script updated
+* GitHub Actions validation passed
+
+Initial roles:
 
 * scout
 * router
@@ -392,6 +521,8 @@ Potential fields include:
 * escalation reason
 * early exit condition
 * human review trigger
+* conflicting report trigger
+* carrier activation justification
 
 ### v0.4 — Trace Receipt Integration
 
@@ -428,6 +559,9 @@ Wing models perform the first movement.
 
 The carrier integrates only when needed.
 
+The Wing Role Registry ensures that the swarm does not become chaotic.
+Each wing receives a defined role, activation condition, permission boundary, and trace obligation.
+
 This turns AI inference from a monolithic pipeline into a traceable relay system.
 
 In short:
@@ -437,4 +571,3 @@ In short:
 ## License
 
 TBD.
-
