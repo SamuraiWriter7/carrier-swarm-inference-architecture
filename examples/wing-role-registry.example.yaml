@@ -1,0 +1,229 @@
+registry_id: wing-role-registry-v0.2
+version: v0.2.0-candidate
+description: >
+  A standard registry of wing model roles for Carrier Swarm Inference Architecture.
+  Wing roles define how lightweight models scout, route, compress, verify, guard,
+  remember, and trace inference missions before carrier activation.
+
+roles:
+  - role_id: scout
+    display_name: Scout Wing
+    category: scouting
+    responsibility: >
+      Performs initial observation and determines whether an input appears simple,
+      repetitive, uncertain, risky, or worth escalating.
+    typical_inputs:
+      - raw_input
+      - local_event
+      - sensor_event
+    typical_outputs:
+      - initial_observation
+      - confidence_score
+      - early_exit_recommendation
+      - escalation_recommendation
+    activation_mode: always_first
+    escalation_permission:
+      can_request_carrier_activation: true
+      can_end_mission_early: true
+      can_request_human_review: false
+    activation_conditions:
+      - new_input_received
+      - sensor_event_detected
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: true
+      log_escalation_reason: true
+    human_governance_note: >
+      Scout wings may recommend escalation or early exit, but should not make
+      final high-impact decisions.
+
+  - role_id: router
+    display_name: Router Wing
+    category: routing
+    responsibility: >
+      Determines which wing model or carrier node should receive the next step
+      of the inference mission.
+    typical_inputs:
+      - scout_report
+      - mission_context
+      - confidence_score
+    typical_outputs:
+      - route_decision
+      - next_node
+      - escalation_path
+    activation_mode: conditional
+    escalation_permission:
+      can_request_carrier_activation: true
+      can_end_mission_early: false
+      can_request_human_review: true
+    activation_conditions:
+      - low_confidence
+      - high_ambiguity
+      - carrier_request
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: true
+      log_escalation_reason: true
+    human_governance_note: >
+      Router wings should record why a mission was routed to another wing,
+      escalated to the carrier, or sent to human review.
+
+  - role_id: compressor
+    display_name: Compression Wing
+    category: compression
+    responsibility: >
+      Reduces raw or verbose information into compact summaries, features,
+      or event reports before carrier integration.
+    typical_inputs:
+      - raw_input
+      - scout_report
+      - local_inference_result
+    typical_outputs:
+      - compressed_summary
+      - feature_report
+      - return_report
+    activation_mode: on_demand
+    escalation_permission:
+      can_request_carrier_activation: true
+      can_end_mission_early: false
+      can_request_human_review: false
+    activation_conditions:
+      - compression_required
+      - carrier_request
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: false
+      log_escalation_reason: true
+    human_governance_note: >
+      Compression wings must avoid hiding uncertainty or removing information
+      required for human review.
+
+  - role_id: verifier
+    display_name: Verification Wing
+    category: verification
+    responsibility: >
+      Checks claims, sources, references, or internal consistency before carrier
+      integration or final output.
+    typical_inputs:
+      - claim
+      - source_reference
+      - draft_output
+    typical_outputs:
+      - verification_result
+      - inconsistency_report
+      - source_check_summary
+    activation_mode: conditional
+    escalation_permission:
+      can_request_carrier_activation: true
+      can_end_mission_early: false
+      can_request_human_review: true
+    activation_conditions:
+      - source_verification_required
+      - high_risk
+      - high_ambiguity
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: true
+      log_escalation_reason: true
+    human_governance_note: >
+      Verification wings should escalate unresolved uncertainty to the carrier
+      or to human review.
+
+  - role_id: safety_guard
+    display_name: Safety Guard Wing
+    category: safety
+    responsibility: >
+      Detects safety-sensitive, high-impact, harmful, or governance-relevant
+      conditions before further processing.
+    typical_inputs:
+      - raw_input
+      - mission_context
+      - proposed_output
+    typical_outputs:
+      - safety_assessment
+      - risk_level
+      - human_review_request
+    activation_mode: conditional
+    escalation_permission:
+      can_request_carrier_activation: true
+      can_end_mission_early: true
+      can_request_human_review: true
+    activation_conditions:
+      - high_risk
+      - safety_concern
+      - high_ambiguity
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: true
+      log_escalation_reason: true
+    human_governance_note: >
+      Safety guard wings may halt or escalate a mission, but human review should
+      remain available for high-impact cases.
+
+  - role_id: memory_agent
+    display_name: Memory Wing
+    category: memory
+    responsibility: >
+      Retrieves, summarizes, or updates relevant memory context for the current
+      inference mission.
+    typical_inputs:
+      - mission_context
+      - memory_query
+      - carrier_request
+    typical_outputs:
+      - memory_summary
+      - relevant_context
+      - memory_boundary_note
+    activation_mode: on_demand
+    escalation_permission:
+      can_request_carrier_activation: false
+      can_end_mission_early: false
+      can_request_human_review: true
+    activation_conditions:
+      - memory_lookup_required
+      - carrier_request
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: false
+      log_escalation_reason: false
+    human_governance_note: >
+      Memory wings should respect memory boundaries and avoid introducing
+      irrelevant or stale context.
+
+  - role_id: trace_agent
+    display_name: Trace Wing
+    category: trace
+    responsibility: >
+      Records mission participation, routing, escalation, and contribution
+      evidence for traceability and future audit.
+    typical_inputs:
+      - mission_log
+      - wing_reports
+      - carrier_report
+      - human_review_status
+    typical_outputs:
+      - trace_record
+      - contribution_log
+      - escalation_log
+    activation_mode: event_triggered
+    escalation_permission:
+      can_request_carrier_activation: false
+      can_end_mission_early: false
+      can_request_human_review: true
+    activation_conditions:
+      - trace_required
+      - carrier_request
+    trace_requirements:
+      log_input_summary: true
+      log_output_summary: true
+      log_confidence: false
+      log_escalation_reason: true
+    human_governance_note: >
+      Trace wings should preserve enough evidence for review, attribution,
+      and future royalty or compute-allocation integration
