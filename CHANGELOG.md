@@ -8,12 +8,96 @@ This repository follows a lightweight candidate-based release process during ear
 
 ### Planned
 
-* Add a dedicated Activation Policy schema.
-* Define carrier activation thresholds.
-* Define early exit conditions.
-* Add trace receipt integration fields.
+* Add Trace Receipt Integration.
+* Define wing contribution records.
+* Define carrier activation records.
+* Define early exit records.
 * Add compute cost and optional energy cost logging.
 * Explore integration with Compute Access Royalty OS and Trace Receipt protocols.
+
+## [v0.3.0-candidate] - 2026-06-24
+
+### Added
+
+* Added `schemas/activation-policy.schema.json`.
+* Added `examples/activation-policy.example.yaml`.
+* Updated `scripts/validate_examples.py` to validate:
+
+  * `Carrier Swarm Mission`
+  * `Wing Role Registry`
+  * `Activation Policy`
+* Updated `README.md` to reflect v0.3 status, scope, examples, validation output, repository structure, roadmap, and conceptual position.
+* Confirmed GitHub Actions validation passes with v0.3 files.
+
+### Defined
+
+* Introduced the `Activation Policy` as the decision layer for carrier-swarm inference systems.
+* Defined when the carrier model should be activated.
+* Defined when early exit is allowed.
+* Defined when wing models may continue without carrier activation.
+* Defined when human review is required.
+* Defined when a mission may be halted.
+* Defined initial escalation decision outcomes:
+
+  * early exit
+  * continue with wings
+  * activate carrier
+  * request human review
+  * halt mission
+
+### Activation Policy Fields
+
+The v0.3 schema defines:
+
+* policy identifier
+* version
+* default carrier activation mode
+* early exit rules
+* carrier activation triggers
+* optional numeric thresholds
+* escalation decision records
+* trace requirements
+* human governance boundaries
+
+### Validation
+
+* Confirmed that `carrier-swarm-mission.example.yaml` validates successfully against `carrier-swarm-mission.schema.json`.
+* Confirmed that `wing-role-registry.example.yaml` validates successfully against `wing-role-registry.schema.json`.
+* Confirmed that `activation-policy.example.yaml` validates successfully against `activation-policy.schema.json`.
+* Confirmed that GitHub Actions validation workflow passes.
+
+### Conceptual Position
+
+`v0.3.0-candidate` establishes the energy-aware decision layer of Carrier Swarm Inference Architecture.
+
+In v0.1, the repository defined how a mission is recorded.
+
+In v0.2, the repository defined what each wing model is allowed and expected to do.
+
+In v0.3, the repository defines when the carrier model should wake up.
+
+This prevents the carrier from becoming an always-on monolithic system again.
+
+The core principle remains:
+
+> Do not invoke the largest model by default.
+> Let smaller models scout, filter, compress, verify, route, and record first.
+
+### Repository Status
+
+`v0.3.0-candidate` represents the third functional validation point of the repository.
+
+The repository now includes:
+
+* mission schema
+* mission example
+* wing role registry schema
+* wing role registry example
+* activation policy schema
+* activation policy example
+* validation script
+* GitHub Actions workflow
+* validated v0.1, v0.2, and v0.3 examples
 
 ## [v0.2.0-candidate] - 2026-06-24
 
