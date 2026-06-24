@@ -26,7 +26,12 @@ VALIDATION_TARGETS = [
         "name": "Carrier Swarm Mission",
         "schema": ROOT_DIR / "schemas" / "carrier-swarm-mission.schema.json",
         "example": ROOT_DIR / "examples" / "carrier-swarm-mission.example.yaml",
-    }
+    },
+    {
+        "name": "Wing Role Registry",
+        "schema": ROOT_DIR / "schemas" / "wing-role-registry.schema.json",
+        "example": ROOT_DIR / "examples" / "wing-role-registry.example.yaml",
+    },
 ]
 
 
@@ -106,3 +111,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
